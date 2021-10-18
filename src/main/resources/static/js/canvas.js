@@ -30,8 +30,8 @@ $(document).ready(() => {
   // TODO: set the width and height of canvas
   // hint -- use the globally defined TOGGLE_ROWS, TOGGLE_COLS,
   //         TILE_HEIGHT, TILE_WIDTH
-  canvas.width = TILE_WIDTH;
-  canvas.height = TILE_HEIGHT;
+  canvas.width = TILE_WIDTH * TOGGLE_COLS;
+  canvas.height = TILE_HEIGHT * TOGGLE_ROWS;
 
   // TODO: set up the canvas context
 
@@ -108,25 +108,25 @@ const paintToggle = () => {
   ctx.beginPath()
   ctx.strokeStyle = "black";
 
-  ctx.moveTo(10,10);
-  ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, 10);
+  ctx.moveTo(0,0);
+  ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, 0);
 
-  ctx.moveTo(10, 10);
-  ctx.lineTo(10, TOGGLE_ROWS * TILE_HEIGHT);
+  ctx.moveTo(0, 0);
+  ctx.lineTo(0, TOGGLE_ROWS * TILE_HEIGHT);
 
-  ctx.moveTo(10, TOGGLE_ROWS * TILE_HEIGHT);
+  ctx.moveTo(0, TOGGLE_ROWS * TILE_HEIGHT);
   ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, TOGGLE_ROWS * TILE_HEIGHT);
 
-  ctx.moveTo(TOGGLE_COLS * TILE_WIDTH, 10);
+  ctx.moveTo(TOGGLE_COLS * TILE_WIDTH, 0);
   ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, TOGGLE_ROWS * TILE_HEIGHT);
 
-  ctx.moveTo(10, TOGGLE_ROWS * TILE_HEIGHT / 2);
+  ctx.moveTo(0, TOGGLE_ROWS * TILE_HEIGHT / 2);
   ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, TOGGLE_ROWS * TILE_HEIGHT / 2);
 
-  ctx.moveTo(TOGGLE_COLS * TILE_WIDTH / 3, 10);
+  ctx.moveTo(TOGGLE_COLS * TILE_WIDTH / 3, 0);
   ctx.lineTo(TOGGLE_COLS * TILE_WIDTH / 3, TOGGLE_ROWS * TILE_HEIGHT);
 
-  ctx.moveTo((TOGGLE_COLS * TILE_WIDTH / 3) * 2, 10);
+  ctx.moveTo((TOGGLE_COLS * TILE_WIDTH / 3) * 2, 0);
   ctx.lineTo((TOGGLE_COLS * TILE_WIDTH / 3) * 2, TOGGLE_ROWS * TILE_HEIGHT);
 
   ctx.stroke();
@@ -162,14 +162,15 @@ const paintToggle = () => {
         // toggle setting, so fill the rectangle with a color of your choice!
         // use ctx.fillRect()
 
-        ctx.fillStyle = "gray";
-        ctx.fillRect(0, 0,  TOGGLE_COLS * TILE_WIDTH, TOGGLE_ROWS * TILE_HEIGHT);
+        // ctx.fillStyle = "gray";
+        // ctx.fillRect(col * TILE_WIDTH, row * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
 
       }
 
       // TODO: using the variable 'text', set the text of each rectangle
       // with ctx.fillText()
 
+      ctx.fillStyle = "white"
       ctx.fillText(text, TILE_WIDTH * (col + 0.5), TILE_HEIGHT * (row + 0.5))
 
     }
@@ -192,25 +193,31 @@ const paintOnClick = event => {
   const x = event.pageX - canvas.offsetLeft
   const y = event.pageY - canvas.offsetTop
 
+  console.log(x);
+  console.log(y);
+
   // TODO: use these x y coordinates to determine the row and col of
   // the clicked tile
 
   let row;
   let col;
 
-  if (x >= TILE_HEIGHT) {
-    row = 1;
-  } else if (x < TILE_HEIGHT) {
-    row = 0;
-  }
-
-  if (y < TILE_WIDTH) {
-    col = 0;
-  } else if (y >= (TOGGLE_COLS * TILE_WIDTH / 3) * 2) {
+  if (x > TILE_WIDTH && x < TILE_WIDTH * 2) {
     col = 1;
+  } else if (x < TILE_WIDTH) {
+    col = 0;
   } else {
     col = 2;
   }
+
+  if (y < TILE_HEIGHT) {
+    row = 0;
+  } else {
+    row = 1;
+  }
+
+  console.log(row + "row");
+  console.log(col + "col");
 
   // TODO: get the selected toggle setting by indexing into the array 'flags'
   // using the row of the clicked tile.
@@ -224,18 +231,49 @@ const paintOnClick = event => {
     // you chose in paintToggle(). Remember that after coloring,
     // you're going to want to draw the text again using ctx.fillText()
 
-    ctx.fillStyle = "blue";
-    ctx.fillRect(col, row, TILE_WIDTH, TILE_HEIGHT)
-    ctx.fillText(toggle, TILE_WIDTH * (col + 0.5), TILE_HEIGHT * (row + 0.5))
+    ctx.fillStyle = "green";
+    ctx.fillRect(col * TILE_WIDTH, row * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT)
+    ctx.fillStyle = "white";
+    ctx.fillText("on", TILE_WIDTH * (col + 0.5), TILE_HEIGHT * (row + 0.5))
 
     // TODO: color the adjacent tile (ie. the 'off' tile) with whichever color
     // you chose as the base toggle pane color. This will mimic the effect of
     // deselecting the 'off' tile when 'on' is selected. Remember again that
     // after coloring, you're going to want to redraw the text.
 
+    ctx.fillStyle = "blue";
+    ctx.fillRect((col + 1) * TILE_WIDTH, row * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT)
+    ctx.fillRect((col - 1) * TILE_WIDTH, row * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT)
     ctx.fillStyle = "white";
-    ctx.fillRect(col + col, row, TILE_WIDTH, TILE_HEIGHT)
-    ctx.fillText(toggle, TILE_WIDTH * (col + col + 0.5), TILE_HEIGHT * (row + 0.5))
+    ctx.fillText(toggle, TILE_WIDTH * (col - 1 + 0.5), TILE_HEIGHT * (row + 0.5))
+    ctx.fillText("off", TILE_WIDTH * (col + 1 + 0.5), TILE_HEIGHT * (row + 0.5))
+
+    ctx.beginPath()
+    ctx.strokeStyle = "black";
+
+    ctx.moveTo(0,0);
+    ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, 0);
+
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, TOGGLE_ROWS * TILE_HEIGHT);
+
+    ctx.moveTo(0, TOGGLE_ROWS * TILE_HEIGHT);
+    ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, TOGGLE_ROWS * TILE_HEIGHT);
+
+    ctx.moveTo(TOGGLE_COLS * TILE_WIDTH, 0);
+    ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, TOGGLE_ROWS * TILE_HEIGHT);
+
+    ctx.moveTo(0, TOGGLE_ROWS * TILE_HEIGHT / 2);
+    ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, TOGGLE_ROWS * TILE_HEIGHT / 2);
+
+    ctx.moveTo(TOGGLE_COLS * TILE_WIDTH / 3, 0);
+    ctx.lineTo(TOGGLE_COLS * TILE_WIDTH / 3, TOGGLE_ROWS * TILE_HEIGHT);
+
+    ctx.moveTo((TOGGLE_COLS * TILE_WIDTH / 3) * 2, 0);
+    ctx.lineTo((TOGGLE_COLS * TILE_WIDTH / 3) * 2, TOGGLE_ROWS * TILE_HEIGHT);
+
+    ctx.stroke();
+
 
     // TODO: using the selected toggle setting that you defined in a previous
     // todo, add this into the 'selection' array we defined globally. Remember
@@ -254,26 +292,61 @@ const paintOnClick = event => {
     // you're going to want to draw the text again using ctx.fillText()
 
     ctx.fillStyle = "gray";
-    ctx.fillRect(col, row, TILE_WIDTH, TILE_HEIGHT)
-    ctx.fillText(toggle, TILE_WIDTH * (col + 0.5), TILE_HEIGHT * (row + 0.5))
+    ctx.fillRect(col * TILE_WIDTH, row * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT)
+    ctx.fillStyle = "white";
+    ctx.fillText("off", TILE_WIDTH * (col + 0.5), TILE_HEIGHT * (row + 0.5))
 
     // TODO: color the adjacent tile (ie. the 'on' tile) with whichever color
     // you chose as the base toggle pane color. This will mimic the effect of
     // deselecting the 'on' tile when 'off' is selected. Remember again that
     // after coloring, you're going to want to redraw the text.
 
+    ctx.fillStyle = "blue";
+    ctx.fillRect((col - 1) * TILE_WIDTH, row * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT)
+    ctx.fillRect((col - 2) * TILE_WIDTH, row * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT)
     ctx.fillStyle = "white";
-    ctx.fillRect(col + col, row, TILE_WIDTH, TILE_HEIGHT)
-    ctx.fillText(toggle, TILE_WIDTH * (col + col + 0.5), TILE_HEIGHT * (row + 0.5))
+    ctx.fillText(toggle, TILE_WIDTH * (col - 2 + 0.5), TILE_HEIGHT * (row + 0.5))
+    ctx.fillText("on", TILE_WIDTH * (col - 1 + 0.5), TILE_HEIGHT * (row + 0.5))
+
+    ctx.beginPath()
+    ctx.strokeStyle = "black";
+
+    ctx.moveTo(0,0);
+    ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, 0);
+
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, TOGGLE_ROWS * TILE_HEIGHT);
+
+    ctx.moveTo(0, TOGGLE_ROWS * TILE_HEIGHT);
+    ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, TOGGLE_ROWS * TILE_HEIGHT);
+
+    ctx.moveTo(TOGGLE_COLS * TILE_WIDTH, 0);
+    ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, TOGGLE_ROWS * TILE_HEIGHT);
+
+    ctx.moveTo(0, TOGGLE_ROWS * TILE_HEIGHT / 2);
+    ctx.lineTo(TOGGLE_COLS * TILE_WIDTH, TOGGLE_ROWS * TILE_HEIGHT / 2);
+
+    ctx.moveTo(TOGGLE_COLS * TILE_WIDTH / 3, 0);
+    ctx.lineTo(TOGGLE_COLS * TILE_WIDTH / 3, TOGGLE_ROWS * TILE_HEIGHT);
+
+    ctx.moveTo((TOGGLE_COLS * TILE_WIDTH / 3) * 2, 0);
+    ctx.lineTo((TOGGLE_COLS * TILE_WIDTH / 3) * 2, TOGGLE_ROWS * TILE_HEIGHT);
+
+    ctx.stroke();
+
 
     // TODO: using the selected toggle setting that you defined in a previous
     // todo, remove this from the 'selection' array we defined globally. Remember
     // that you only want to remove this setting if it is in the
     // 'selection' array, so be sure to check for that first!
 
+    console.log(selection.toString() + "before")
+
     if (selection.includes(toggle)) {
       selection = selection.filter(item => item !== toggle)
     }
+
+    console.log(selection.toString() + "after")
   }
 
 }
